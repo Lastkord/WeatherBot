@@ -1,0 +1,7 @@
+.git/
+.github/
+.venv/
+terraform/
+compose/
+.idea/
+venv/
