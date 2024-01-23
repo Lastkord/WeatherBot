@@ -14,6 +14,7 @@ from telegram.ext import (
     PicklePersistence
 )
 from config import TELEGRAM_BOT_TOKEN
+from enums import States
 
 
 logging.basicConfig(
@@ -23,7 +24,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-CITY, WEATHER_TYPE = range(2)
+CITY, WEATHER_TYPE = States.city.value, States.weather.value
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
