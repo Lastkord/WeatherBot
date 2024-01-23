@@ -3,7 +3,7 @@ from handlers.weather import weather_handler
 from handlers.weather_select import weather_select
 from handlers.city import city_handler
 from handlers.city_select import city_select
-from telegram import ReplyKeyboardMarkup, Update
+from telegram import Update, BotCommand
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -15,6 +15,7 @@ from telegram.ext import (
 )
 from config import TELEGRAM_BOT_TOKEN
 from enums import States
+
 
 CITY, WEATHER_TYPE = States.city.value, States.weather.value
 
@@ -35,6 +36,12 @@ def main() -> None:
     # Create the Application and pass it your bot's token.
     persistence = PicklePersistence(filepath="conversationbot")
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).persistence(persistence).build()
+    application.bot.set_my_commands(
+        commands=[
+            BotCommand("city", "Ввод города"),
+            BotCommand("weather", "Прогноз погоды")
+        ]
+    )
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
