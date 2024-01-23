@@ -2,6 +2,7 @@ import httpx
 from config import WEATHER_TOKEN
 from telegram import Update
 from telegram.ext import ContextTypes
+from enums import States
 
 
 def get_response_to_few_days(data):
@@ -39,4 +40,4 @@ async def weather_select(update: Update, context: ContextTypes.DEFAULT_TYPE):
             caption=item['text'],
             photo=item['img']
         )
-    return 1
+    return States.weather.value

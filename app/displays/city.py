@@ -2,6 +2,7 @@ from telegram import ReplyKeyboardRemove, Update
 from telegram.ext import (
     ContextTypes,
 )
+from enums import States
 
 
 async def city_display(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -9,4 +10,5 @@ async def city_display(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         text="Напишите ваш город",
         reply_markup=ReplyKeyboardRemove()
     )
-    return 0
+
+    return States.city.value

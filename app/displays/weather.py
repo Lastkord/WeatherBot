@@ -2,6 +2,7 @@ from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     ContextTypes,
 )
+from enums import States
 
 
 async def weather_display(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -12,4 +13,4 @@ async def weather_display(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_keyboard, one_time_keyboard=True, input_field_placeholder=""
         )
     )
-    return 1
+    return States.weather.value
