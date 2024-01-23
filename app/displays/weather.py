@@ -1,4 +1,5 @@
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, \
+    InlineKeyboardMarkup
 from telegram.ext import (
     ContextTypes,
 )
@@ -6,11 +7,15 @@ from enums import States
 
 
 async def weather_display(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    reply_keyboard = [["На один день", "На два дня", "На три дня"]]
+    keyboard = [
+
+        [InlineKeyboardButton("На один день", callback_data=1)],
+        [InlineKeyboardButton("На два дня", callback_data=2)],
+        [InlineKeyboardButton("На три дня", callback_data=3)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(
-        "Выберите прогноз",
-        reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder=""
-        )
+        "Выберите на сколько дней хотите получить прогноз погоды:",
+        reply_markup=reply_markup
     )
     return States.weather.value

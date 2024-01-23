@@ -3,6 +3,15 @@ from config import WEATHER_TOKEN
 from telegram import Update
 from telegram.ext import ContextTypes
 from enums import States
+import logging
+
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+logger = logging.getLogger(__name__)
 
 
 def get_response_to_few_days(data):
@@ -22,17 +31,10 @@ def get_response_to_few_days(data):
 
 
 async def weather_select(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data['weather_type'] = update.message.text
-    index = 0
-    match context.user_data['weather_type']:
-        case 'На один день':
-            index = 1
-        case 'На два дня':
-            index = 2
-        case 'На три дня':
-            index = 3
+    query = update.callback_query
+    await query.answer()
     result = httpx.get(
-        f"http://api.weatherapi.com/v1/forecast.json?key={WEATHER_TOKEN}&q={context.user_data['city']}&days={index}").json()
+        f"http://api.weatherapi.com/v1/forecast.json?key={WEATHER_TOKEN}&q={context.user_data['city']}&days={query.data}").json()
     weather = get_response_to_few_days(result)
     for item in weather:
         await context.bot.send_photo(

@@ -1,4 +1,4 @@
-import logging
+from logger import logger
 from handlers.weather import weather_handler
 from handlers.weather_select import weather_select
 from handlers.city import city_handler
@@ -11,18 +11,10 @@ from telegram.ext import (
     ConversationHandler,
     MessageHandler,
     filters,
-    PicklePersistence
+    PicklePersistence, CallbackQueryHandler
 )
 from config import TELEGRAM_BOT_TOKEN
 from enums import States
-
-
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logging.getLogger("httpx").setLevel(logging.WARNING)
-
-logger = logging.getLogger(__name__)
 
 CITY, WEATHER_TYPE = States.city.value, States.weather.value
 
@@ -30,19 +22,8 @@ CITY, WEATHER_TYPE = States.city.value, States.weather.value
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.message.from_user
     logger.info("Country of %s: %s", user.first_name, update.message.text)
+    await update.message.reply_text(text=f"{user.first_name}! Добро пожаловать в Weather Bot. Если пользуешься мной впервые то скорее вводи команду /city и пиши город, где хочешь узнать погоду!")
     return CITY
-
-
-async def city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-
-    reply_keyboard = [["На один день", "На два дня", "На три дня"]]
-    await update.message.reply_text(
-        "Выберите прогноз",
-        reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder=""
-        )
-    )
-    return WEATHER_TYPE
 
 
 async def cancel(update: Update) -> int:
@@ -54,12 +35,11 @@ def main() -> None:
     # Create the Application and pass it your bot's token.
     persistence = PicklePersistence(filepath="conversationbot")
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).persistence(persistence).build()
-    #application.add_handler(CommandHandler("weather", weather_type))
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
             CITY: [MessageHandler(filters.TEXT, city_select)],
-            WEATHER_TYPE: [MessageHandler(filters.Regex("^(На один день|На два дня|На три дня)$"), weather_select)]
+            WEATHER_TYPE: [CallbackQueryHandler(weather_select)]
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
